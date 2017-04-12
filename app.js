@@ -13,15 +13,30 @@ var mongoose = require('mongoose');  // Simple db schemas
 mongoose.connect('mongodb://localhost/loginapp');  // Here's our db
 var db = mongoose.connection;
 
+// Include the files to use for routes
+// In these files, define the custom express router for different types of http requests
+var routes = require('./routes/index')
+var users = require('./routes/users');
+
 
 // Initialize app
 var app = express();
 
-app.use('*', function(req, res) {
-  res.end('App received your request.');
-})
+// Set static folder to be in public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Set prot
+// Set our view directory
+app.set('views', path.join(__dirname, 'views'));
+
+// Set app engine to handlebars
+app.engine('handlebars', exphbs({ defaultLayout: 'layout' }));
+app.set('view engine', 'handlebars');
+
+// Pass in file references for the routes
+app.use('/', routes);
+app.use('/users', users);
+
+// Set port 
 app.set('port', (process.env.PORT || 3000));
 
 // Start app
