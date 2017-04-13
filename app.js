@@ -10,7 +10,7 @@ var passport = require('passport');  // Authentication
 var LocalStrategy = require('passport-local').Strategy;  // Local authentication strategy
 var mongo = require('mongodb');  // Simple db
 var mongoose = require('mongoose');  // Simple db schemas
-mongoose.connect('mongodb://localhost/loginapp');  // Here's our db
+mongoose.connect('mongodb://localhost/Voting-app');  // Here's our db
 var db = mongoose.connection;
 
 // Include the files to use for routes
@@ -31,6 +31,58 @@ app.set('views', path.join(__dirname, 'views'));
 // Set app engine to handlebars
 app.engine('handlebars', exphbs({ defaultLayout: 'layout' }));
 app.set('view engine', 'handlebars');
+
+
+// Add in middleware
+
+// bodyParser middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// Middleware for express session
+app.use(session({
+  secret: 'secret',
+  saveUninitialized: true,
+  resave: true
+}));
+
+// Passport initialization
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Express validator
+// From https://www.npmjs.com/package/express-validator
+// Here, the formParam value is going to be morphed into form body format useful for printing
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+    let namespace = param.split('.');
+    let root = namespace.shift();
+    let formparam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param: formParam,
+      msg: msg,
+      value: value
+    };
+  }
+}));
+
+// Connect for flash messages
+app.use(flash());
+
+// 'Global' variables for flash messages
+// Uses 'global' varialbes by assigning to res.locals
+app.use(function (req, res, next) {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  req.locals.user = req.user || null;
+  next();
+});
 
 // Pass in file references for the routes
 app.use('/', routes);

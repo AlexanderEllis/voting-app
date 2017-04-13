@@ -3,7 +3,7 @@ var router = express.Router();
 
 // Get the home page
 // ensureAuthenticated is middleware added in as argument
-router.get('/', /* ensureAuthenticated, */ function(req, res) {
+router.get('/', ensureAuthenticated, function(req, res) {
   res.render('index');
 });
 
