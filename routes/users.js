@@ -3,6 +3,8 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+// We already have access the mongodb in app.js, so we do not need to redefine User
+
 // Allows us to access user mongoose model
 var User = require('../models/user');
 
@@ -94,6 +96,7 @@ passport.deserializeUser(function(id, done) {
 router.post('/login',
   // When we receive POST to login, authenticate with local strategy
   // If it succeeds, send to index, if failure, send to login page with flash message
+  // passport.authenticate automatically adds the user object to the req when redirecting
   passport.authenticate('local', {successRedirect: '/', failureRedirect: '/users/login', failureFlash: true}),
   function(req, res) {
     res.redirect('/');
