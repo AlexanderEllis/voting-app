@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var bcrypt = requier('bcryptjs'); // Used for password hashing
+var bcrypt = require('bcryptjs'); // Used for password hashing
 
 var UserSchema = mongoose.Schema({
   username: {
@@ -23,7 +23,7 @@ var User = module.exports = mongoose.model('User', UserSchema);
 
 // Define function for hashing password.  Used in POST to register
 module.exports.createUser = function(newUser, callback) {
-  bcrypt.genSale(10, function(err, salt) { // Generate the salt
+  bcrypt.genSalt(10, function(err, salt) { // Generate the salt
     bcrypt.hash(newUser.password, salt, function(err, hash) { // Hash the password
       newUser.password = hash;  // Reassign newUser.password to be the hashed value
       newUser.save(callback);

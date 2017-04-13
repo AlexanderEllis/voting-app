@@ -58,7 +58,7 @@ app.use(expressValidator({
   errorFormatter: function(param, msg, value) {
     let namespace = param.split('.');
     let root = namespace.shift();
-    let formparam = root;
+    let formParam = root;
 
     while(namespace.length) {
       formParam += '[' + namespace.shift() + ']';
@@ -80,7 +80,7 @@ app.use(function (req, res, next) {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
-  req.locals.user = req.user || null;
+  res.locals.user = req.user || null;
   next();
 });
 
