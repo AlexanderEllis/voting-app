@@ -73,9 +73,22 @@ router.get('/:poll', function(req, res) {
       res.render('poll-not-found');
       return
     }
-    res.render('poll', { poll: req.params.poll });
+    let ip = req.connection.remoteAddress.replace(/[:a-x]/g, '');
+    Poll.checkIfAlreadyVoted(poll.key, ip, function(err, voted) {
+      res.render('poll', { poll, voted });
+    })
   });
 });
+
+// POST to specific poll page
+router.post('/:poll', function(req, res) {
+  console.log(req.body)
+  // TODO: Handle vote
+  // TODO: Handle new choice
+});
+
+// TODO: Delete /:POLL
+// Ensure authenticated, ensure owner
 
 router.get('/', function(req, res) {
   res.render('poll-not-found');

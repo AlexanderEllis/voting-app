@@ -1,1 +1,20 @@
-<h3>You looked for poll {{ poll }} </h3>
+<h3>{{ poll.name }} </h3>
+
+{{#if voted}}
+  <h4>Here are the results:</h4>
+  <ul>
+    {{#each poll.options }}
+    <li>{{ this.name }} : {{ this.votes }} votes</li>
+    {{/each}}
+  </ul>
+{{else}}
+  <h4>Here are the options:</h4>
+  <form method="post" action="/polls/{{poll.key}}">
+    {{#each poll.options }}
+      <div class="radio">
+        <label><input type="radio" name="{{this.name}}">{{ this.name }}</label>
+      </div>
+    {{/each }}
+    <button type="submit" class="btn btn-default">Vote</button>
+  </form>
+{{/if}}
