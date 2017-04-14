@@ -12,7 +12,8 @@ var PollSchema = mongoose.Schema({
   name: {
     type: String
   },
-  options: [{ name: String, votes: Number }]
+  options: [{ name: String, votes: Number }],
+  voted: [{identifier: Boolean}] // Identifier will be username or IP address
 });
 
 // Create variable we're able to access outside of file
@@ -29,7 +30,8 @@ module.exports.getPollByKey = function(key, callback) {
   Poll.findOne(query, callback);
 }
 
-module.exports.vote = function(key, option, callback) {
+// Vote function
+module.exports.vote = function(key, option, identifier, callback) {
   var query = { key }
   Poll.findOne(query, function(err, poll) {
     if (err) throw err
@@ -41,16 +43,20 @@ module.exports.vote = function(key, option, callback) {
       }
     }
 
+    poll.voted[identifier] = true;
+
     poll.save(callback);
   })
 }
 
-module.exports.addOption = function(key, option, callback) {
+// Function for adding option to existing poll
+module.exports.addOption = function(key, option, identifier, callback) {
   var query = { key };
   Poll.findOne(query, function(err, poll) {
-    if (err) throw err
+    if (err) throw err;
 
-    poll.options.push( { name: option, votes: 0 });
+    poll.options.push( { name: option, votes: 1 });
+    poll.voted[identifier] = true;
 
     poll.save(callback);
   })
@@ -59,4 +65,13 @@ module.exports.addOption = function(key, option, callback) {
 module.exports.deletePoll = function(key, callback) {
   var query = { key };
   Poll.deleteOne(query, callback);
+}
+
+module.exports.checkIfAlreadyVoted = function(key, identifier, callback) {
+  var query = { key };
+  Poll.findOne(query, function(err, poll) {
+    if (err) throw err;
+
+    callback(null, Boolean(poll.voted[identifier]));
+  })
 }

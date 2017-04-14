@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var passport = require('passport');
 
+var User = require('../models/user');
 var Poll = require('../models/poll');
 
 // GET to new poll page
@@ -8,25 +10,8 @@ router.get('/new', ensureAuthenticated, function(req, res) {
   res.render('new-poll');
 });
 
-// GET to specific poll page
-router.get('/:poll', function(req, res) {
-  Poll.getPollByKey(req.params.poll, function(err, poll) {
-    if (err) {
-      req.flash('error_msg', err.errmsg);
-      res.render('poll-not-found');
-      return
-    }
-    else if (poll === null) {
-      res.render('poll-not-found');
-      return
-    }
-    res.render('poll', { poll: req.params.poll });
-  });
-});
-
-// POST to new page
-router.post('/new', function(req, res) {
-
+// PUT to new page
+router.post('/new', ensureAuthenticated, function(req, res) {
   // Access body as json with body-parser
   let name = req.body.name;
   let option1 = req.body.option1;
@@ -46,17 +31,14 @@ router.post('/new', function(req, res) {
   // Add to body for express-validator
   req.body.options = options;
 
-  // Generate random key by generating random number, base 36 (lots of letters) and substring it
-  let newKey = Math.random().toString(36).substr(2, 5); 
-
-  // TODO: validate newKey is unique
-
   // Validate name and options
   req.checkBody('name', 'Poll name is required').notEmpty();
   req.checkBody('options', 'At least one option is required').notEmpty();
 
+
   // Grab any errors
   let errors = req.validationErrors();
+
 
   // If there are any errors, we'll pass to new-poll
   if (errors) {
@@ -64,8 +46,35 @@ router.post('/new', function(req, res) {
   }
   else {
     // TODO: Add Poll to database
-    res.render('poll', {poll: name});
+    let newKey = Math.random().toString(36).substr(2, 5); 
+
+    var newPoll = new Poll({ key: newKey, owner: req.user['_doc'].username, name, options: options });
+
+    Poll.createPoll(newPoll, function(err, poll) {
+      if (err) {
+        req.flash('error_msg', err.errmsg);
+        res.redirect('polls/new');
+      }
+      req.flash('success_msg', 'Poll created!');
+      res.redirect('/polls/' + newKey);
+    })
   }
+});
+
+// GET to specific poll page
+router.get('/:poll', function(req, res) {
+  Poll.getPollByKey(req.params.poll, function(err, poll) {
+    if (err) {
+      req.flash('error_msg', err.errmsg);
+      res.render('poll-not-found');
+      return
+    }
+    else if (!poll) {
+      res.render('poll-not-found');
+      return
+    }
+    res.render('poll', { poll: req.params.poll });
+  });
 });
 
 router.get('/', function(req, res) {
@@ -81,5 +90,6 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/users/login');
   }
 }
+
 
 module.exports = router;

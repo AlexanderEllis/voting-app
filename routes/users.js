@@ -74,7 +74,7 @@ passport.use(new LocalStrategy(
           return done(null, user);
         }
         else {
-          return done(null, false, {message: 'Invalid passwrod'});
+          return done(null, false, {message: 'Invalid password'});
         }
       });
     });
