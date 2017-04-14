@@ -1,10 +1,17 @@
 var express = require('express');
 var router = express.Router();
 
+// Access Poll model for getting user's polls
+var Poll = require('../models/poll');
+
 // Get the home page
 // ensureAuthenticated is middleware added in as argument
 router.get('/', ensureAuthenticated, function(req, res) {
-  res.render('index');
+  Poll.getPollsByUsername(req.user.username, function(err, polls) {
+    console.log(req.user.username);
+    console.log(polls);
+    res.render('index', { polls });
+  })
 });
 
 function ensureAuthenticated(req, res, next) {

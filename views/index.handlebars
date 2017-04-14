@@ -1,2 +1,8 @@
 <h2 class="page-header">Dashboard</h2>
 <p>Welcome to your dashboard, {{user.name}}</p>
+
+<ul>
+  {{#each polls}}
+    <li><a href="/polls/{{ this.key }}" >{{ this.name }}</a></li>
+  {{/each}}
+</ul>

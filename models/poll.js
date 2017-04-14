@@ -75,3 +75,8 @@ module.exports.checkIfAlreadyVoted = function(key, identifier, callback) {
     callback(null, Boolean(poll.voted[identifier]));
   })
 }
+
+module.exports.getPollsByUsername = function(username, callback) {
+  var query = { owner: username };
+  Poll.find(query, callback);
+}
