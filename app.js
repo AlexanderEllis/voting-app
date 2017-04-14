@@ -15,8 +15,9 @@ var db = mongoose.connection;
 
 // Include the files to use for routes
 // In these files, define the custom express router for different types of http requests
-var routes = require('./routes/index')
+var routes = require('./routes/index');
 var users = require('./routes/users');
+var polls = require('./routes/polls');
 
 
 // Initialize app
@@ -87,6 +88,7 @@ app.use(function (req, res, next) {
 // Pass in file references for the routes
 app.use('/', routes);
 app.use('/users', users);
+app.use('/polls', polls);
 
 // Set port 
 app.set('port', (process.env.PORT || 3000));

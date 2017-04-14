@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-// We already have access the mongodb in app.js, so we do not need to redefine User
+// We already have access the mongodb in app.js, so we do not need to redefine mongo connection 
 
 // Allows us to access user mongoose model
 var User = require('../models/user');
