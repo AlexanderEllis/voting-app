@@ -8,8 +8,6 @@ var Poll = require('../models/poll');
 // ensureAuthenticated is middleware added in as argument
 router.get('/', ensureAuthenticated, function(req, res) {
   Poll.getPollsByUsername(req.user.username, function(err, polls) {
-    console.log(req.user.username);
-    console.log(polls);
     res.render('index', { polls });
   })
 });

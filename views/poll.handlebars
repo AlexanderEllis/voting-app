@@ -1,4 +1,5 @@
 <h3>{{ poll.name }} </h3>
+<p>Share this poll: {{ url }}</p>
 
 {{#if voted}}
   <h4>Here are the results:</h4>
@@ -15,11 +16,13 @@
         <label><input type="radio" name="option" value="{{ this.name }}">{{ this.name }}</label>
       </div>
     {{/each }}
+    {{#if authenticated}}
     <div class="radio">
          <label><input type="radio" name="option" value="addOption">Add an option</label>
         <input type="text" class="form-control" placeholder="Add option" name="newOption">
       </input>
     </div>
+    {{/if}}
     <button type="submit" class="btn btn-default">Vote</button>
   </form>
 {{/if}}

@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 
-var User = require('../models/user');
 var Poll = require('../models/poll');
 
 // GET to new poll page
@@ -45,7 +44,6 @@ router.post('/new', ensureAuthenticated, function(req, res) {
     res.render('new-poll', { errors });
   }
   else {
-    // TODO: Add Poll to database
     let newKey = Math.random().toString(36).substr(2, 5); 
 
     var newPoll = new Poll({ key: newKey, owner: req.user['_doc'].username, name, options: options });
@@ -75,12 +73,12 @@ router.get('/:poll', function(req, res) {
     }
     let ip = req.connection.remoteAddress.replace(/[:a-x]/g, '');
     Poll.checkIfAlreadyVoted(poll.key, ip, function(err, voted) {
-      res.render('poll', { poll, voted });
+      res.render('poll', { poll, voted, url: req.protocol + '://' + req.get('host') + req.originalUrl, authenticated: req.isAuthenticated() });
     })
   });
 });
 
-// POST to specific poll page
+// POST to specific poll page, either vote or add option
 router.post('/:poll', function(req, res) {
   let pollKey = req.params.poll;
   let option = req.body.option;
@@ -108,15 +106,38 @@ router.post('/:poll', function(req, res) {
       res.redirect(poll.key);
     })
   }
-  // TODO: Handle vote
-  // TODO: Handle new choice
 });
 
 // TODO: Delete /:POLL
-// Ensure authenticated, ensure owner
+router.post('/delete/:poll', ensureAuthenticated, function(req, res) {
+  let user = req.user['_doc'].username;
+  let pollKey = req.params.poll;
+
+  
+  Poll.getPollByKey(pollKey, function(err, poll) {
+    if (err) {
+      req.flash('error_msg', err.errmsg);
+      res.render('poll-not-found');
+      return
+    }
+    else if (!poll) {
+      res.render('poll-not-found');
+      return
+    }
+    else {
+      // Triple check, although the link is only visible for the owner on the dashboard
+      if (poll.owner === user) {
+        Poll.deletePoll(poll.key, function(err, success) {
+          req.flash('success_msg', 'Poll successfully deleted');
+          res.redirect('/');
+        });
+      }
+    }
+  });
+})
 
 router.get('/', function(req, res) {
-  res.render('poll-not-found');
+  res.redirect('/');
 });
 
 function ensureAuthenticated(req, res, next) {
