@@ -82,7 +82,32 @@ router.get('/:poll', function(req, res) {
 
 // POST to specific poll page
 router.post('/:poll', function(req, res) {
-  console.log(req.body)
+  let pollKey = req.params.poll;
+  let option = req.body.option;
+  let ip = req.connection.remoteAddress.replace(/[:a-x]/g, '');
+  // If option is addOption and not blank, add option with 1 vote
+  // Otherwise add vote to option
+  if (option === 'addOption') {
+    let newOption = req.body.newOption;
+    if (newOption === '') {
+      req.flash('error_msg', 'Please include your new option');
+      res.redirect(pollKey);
+    }
+    else {
+      Poll.addOption(pollKey, newOption, ip, function(err, poll) {
+        req.flash('success_msg', 'You have successfully added your option!');
+        res.redirect(poll.key);
+      })
+    }
+  }
+  else {
+    Poll.vote(pollKey, option, ip, function(err, poll) {
+      if (err) throw err;
+
+      req.flash('success_msg', 'You have successfully voted!');
+      res.redirect(poll.key);
+    })
+  }
   // TODO: Handle vote
   // TODO: Handle new choice
 });

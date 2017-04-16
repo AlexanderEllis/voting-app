@@ -13,7 +13,7 @@ var PollSchema = mongoose.Schema({
     type: String
   },
   options: [{ name: String, votes: Number }],
-  voted: [{identifier: Boolean}] // Identifier will be username or IP address
+  voted: [ String ] // Identifier will be username or IP address
 });
 
 // Create variable we're able to access outside of file
@@ -35,15 +35,14 @@ module.exports.vote = function(key, option, identifier, callback) {
   var query = { key }
   Poll.findOne(query, function(err, poll) {
     if (err) throw err
-
     for (let i = 0; i < poll.options.length; i++) {
       if (poll.options[i].name == option) {
-        poll.options[i] ++;
+        poll.options[i].votes ++;
         break;
       }
     }
 
-    poll.voted[identifier] = true;
+    poll.voted.push(identifier);
 
     poll.save(callback);
   })
@@ -54,9 +53,8 @@ module.exports.addOption = function(key, option, identifier, callback) {
   var query = { key };
   Poll.findOne(query, function(err, poll) {
     if (err) throw err;
-
     poll.options.push( { name: option, votes: 1 });
-    poll.voted[identifier] = true;
+    poll.voted.push(identifier);
 
     poll.save(callback);
   })
@@ -72,7 +70,7 @@ module.exports.checkIfAlreadyVoted = function(key, identifier, callback) {
   Poll.findOne(query, function(err, poll) {
     if (err) throw err;
 
-    callback(null, Boolean(poll.voted[identifier]));
+    callback(null, Boolean(poll.voted.includes(identifier)));
   })
 }
 
