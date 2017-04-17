@@ -13,16 +13,16 @@
   <form method="post" action="/polls/{{poll.key}}">
     {{#each poll.options }}
       <div class="radio">
-        <label><input type="radio" name="option" value="{{ this.name }}">{{ this.name }}</label>
+        <label><input type="radio" name="option" value="{{ this.name }}" onclick="toggleTextBox(false)">{{ this.name }}</label>
       </div>
     {{/each }}
     {{#if authenticated}}
-    <div class="radio">
-         <label><input type="radio" name="option" value="addOption">Add an option</label>
-        <input type="text" class="form-control" placeholder="Add option" name="newOption">
-      </input>
+    <div class="radio"> 
+         <label><input type="radio" name="option" value="addOption" onclick="toggleTextBox(true)">Add an option</label>
+         <input id="addOption" type="text" class="form-control" placeholder="Add option" name="newOption" style="visibility:hidden"> 
     </div>
     {{/if}}
     <button type="submit" class="btn btn-default">Vote</button>
   </form>
 {{/if}}
+<script src="/js/add-option-to-existing.js"></script>
