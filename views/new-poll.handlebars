@@ -4,7 +4,7 @@
     <div class="alert alert-danger">{{msg}}</div>
   {{/each}}
 {{/if}}
-<form method="post" action="/polls/new">
+<form id="newPoll" method="post" action="/polls/new">
   <div class="form-group">
     <label>Name</label>
     <input type="Text" class="form-control" placeholder="Name" name="name">
@@ -25,5 +25,7 @@
     <label>Option 4</label>
     <input type="Text" class="form-control" placeholder="Option 4" name="option4">
   </div>
+  <button class="btn btn-sm" id="addOption"> Add Option</button>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
+<script src="/js/add-option.js"></script>
