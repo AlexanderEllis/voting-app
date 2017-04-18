@@ -10,7 +10,7 @@ var passport = require('passport');  // Authentication
 var LocalStrategy = require('passport-local').Strategy;  // Local authentication strategy
 var mongo = require('mongodb');  // Simple db
 var mongoose = require('mongoose');  // Simple db schemas
-mongoose.connect('mongodb://localhost/Voting-app');  // Here's our db
+mongoose.connect(process.env.MONGODB_URI);  // Here's our db, using Heroku config variable
 var db = mongoose.connection;
 
 // Include the files to use for routes
