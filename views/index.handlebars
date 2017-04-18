@@ -4,9 +4,9 @@
 <ul>
   {{#each polls}}
     <li>
-      <form method="post" action="/polls/delete/{{this.key}}" value="{{this.key}}">
+      <form method="post" action="/polls/delete/{{this.key}}" value="{{this.key}}" onsubmit="return confirm('Are you sure you want to delete this poll? \n-{{this.name}}')">
         <a href="/polls/{{ this.key }}" >{{ this.name }}</a>
-        <button type="submit" class="btn btn-default">Delete</button>
+        <button type="submit" class="btn btn-default" >Delete</button>
       </form>
     </li>
   {{/each}}
