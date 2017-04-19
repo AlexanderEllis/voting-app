@@ -69,6 +69,10 @@ module.exports.checkIfAlreadyVoted = function(key, identifier, callback) {
   var query = { key };
   Poll.findOne(query, function(err, poll) {
     if (err) throw err;
+    console.log('already voted:', poll.voted);
+    console.log('ip:', identifier);
+    console.log('did we find it', poll.voted.includes(identifier));
+
 
     callback(null, Boolean(poll.voted.includes(identifier)));
   })
