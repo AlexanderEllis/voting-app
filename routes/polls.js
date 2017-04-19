@@ -71,11 +71,11 @@ router.get('/:poll', function(req, res) {
       res.render('poll-not-found');
       return
     }
-    console.log(req.headers['x-forwarded-for'] || 
+    let ip = req.headers['x-forwarded-for'] || 
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||
-     req.connection.socket.remoteAddress)
-    let ip = req.connection.remoteAddress.replace(/[:a-x]/g, '');
+     req.connection.socket.remoteAddress;
+    let ip = ip.replace(/[:a-x]/g, '');
     Poll.checkIfAlreadyVoted(poll.key, ip, function(err, voted) {
       res.render('poll', { poll, voted, url: req.protocol + '://' + req.get('host') + req.originalUrl, authenticated: req.isAuthenticated() });
     })
