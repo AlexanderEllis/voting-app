@@ -75,7 +75,7 @@ router.get('/:poll', function(req, res) {
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||
      req.connection.socket.remoteAddress;
-    let ip = ip.replace(/[:a-x]/g, '');
+    ip = ip.replace(/[:a-x]/g, '');
     Poll.checkIfAlreadyVoted(poll.key, ip, function(err, voted) {
       res.render('poll', { poll, voted, url: req.protocol + '://' + req.get('host') + req.originalUrl, authenticated: req.isAuthenticated() });
     })
