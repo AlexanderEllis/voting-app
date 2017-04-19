@@ -86,7 +86,11 @@ router.get('/:poll', function(req, res) {
 router.post('/:poll', function(req, res) {
   let pollKey = req.params.poll;
   let option = req.body.option;
-  let ip = req.connection.remoteAddress.replace(/[:a-x]/g, '');
+  let ip = req.headers['x-forwarded-for'] || 
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
+  ip = ip.replace(/[:a-x]/g, '');
   // If option is addOption and not blank, add option with 1 vote
   // Otherwise add vote to option
   if (option === 'addOption') {
