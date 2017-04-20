@@ -1,13 +1,10 @@
 <h3>{{ poll.name }} </h3>
 <p>Share this poll: {{ url }}</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
 {{#if voted}}
   <h4>Here are the results:</h4>
-  <ul>
-    {{#each poll.options }}
-    <li>{{ this.name }} : {{ this.votes }} votes</li>
-    {{/each}}
-  </ul>
+  <p>{{plot poll.options}}</p>
 {{else}}
   <h4>Here are the options:</h4>
   <form method="post" action="/polls/{{poll.key}}">

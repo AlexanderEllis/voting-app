@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+var Handlebars = require('handlebars');
 
 var Poll = require('../models/poll');
 
@@ -77,7 +78,15 @@ router.get('/:poll', function(req, res) {
      req.connection.socket.remoteAddress;
     ip = ip.replace(/[:a-x]/g, '');
     Poll.checkIfAlreadyVoted(poll.key, ip, function(err, voted) {
-      res.render('poll', { poll, voted, url: req.protocol + '://' + req.get('host') + req.originalUrl, authenticated: req.isAuthenticated() });
+      res.render('poll', { 
+        poll,
+        voted, 
+        url: req.protocol + '://' + req.get('host') + req.originalUrl,
+        authenticated: req.isAuthenticated(),
+        helpers: {
+          plot: (options) => graphPoll(options) 
+        }
+      });
     })
   });
 });
@@ -156,6 +165,44 @@ function ensureAuthenticated(req, res, next) {
     req.flash('error_msg', 'You are not logged in');
     res.redirect('/users/login');
   }
+}
+
+function graphPoll(options) {
+  let labels = [];
+  let data = [];
+  for (let i = 0; i < options.length; i++) {
+    labels.push('"' + options[i].name + '"');
+    data.push(options[i].votes);
+  }
+  return new Handlebars.SafeString(`
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <script>
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [ ${labels} ],
+          datasets: [{
+            label: '# of Votes',
+            data: [ ${data} ],
+            backgroundColor: 'rgba(54, 162, 235, 0.4)',
+            borderColor: 'rgba(54, 162, 235, 0.9)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                callback: function(value) {if (value % 1 === 0) {return value;}}
+              }
+            }]
+          }
+        }
+      });
+    </script>`
+  )
 }
 
 
