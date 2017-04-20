@@ -171,7 +171,7 @@ function graphPoll(options) {
   let labels = [];
   let data = [];
   for (let i = 0; i < options.length; i++) {
-    labels.push('"' + options[i].name + '"');
+    labels.push(JSON.stringify(options[i].name));
     data.push(options[i].votes);
   }
   return new Handlebars.SafeString(`
