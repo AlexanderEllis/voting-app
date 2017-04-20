@@ -90,6 +90,11 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/polls', polls);
 
+app.get('*', function(req, res) {
+  req.flash('error_msg', 'Page not found.');
+  res.redirect('/users/login/');
+});
+
 // Set port 
 app.set('port', (process.env.PORT || 3000));
 
